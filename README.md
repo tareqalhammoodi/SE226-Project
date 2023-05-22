@@ -1,4 +1,6 @@
 # SE226-Project
+<b>SE226 - Advanced Programming Final project, Izmir University of Economics 2023 spring semester</b>
+
 <b>Project Title:</b> Weather Information Display Program
 
 <b>Project Description:</b> Create a weather information displaying program with a graphical user interface (GUI) using Python. The program will allow users to select a city from a `dropdown list` and display the weather information for the chosen city. The weather data will be gathered from the internet using the `“requests”` and `“beautifulsoup4”` modules. Python data structures will be utilized to store and present the weather data. Additionally, the program will include a button to toggle between `Celsius` and `Fahrenheit` temperature units. It will also implement functionality to save and load user preferences, including the selected city and temperature unit, from a `Settings.txt` file.
@@ -45,3 +47,15 @@ Modified design:
 
 <img width="850" alt="Screenshot" src="https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/9658f418-bed1-499c-bea8-f111f2928f67">
 
+## Contributors
+Team Members:
+
+&ensp;&ensp;&ensp;[Barkın Mercan](https://github.com/Barkinmercann)
+
+&ensp;&ensp;&ensp;[Özgür Selağzı](https://github.com/ozgursselagzi)
+
+&ensp;&ensp;&ensp;[Tareq Alhammoodi](https://www.linkedin.com/in/tareq-alhammoodi-290519183/)
+
+Course Assistan(s):
+
+&ensp;&ensp;&ensp;[Res. Asst. Erdem Okur](https://people.ieu.edu.tr/en/erdemokur/main)
