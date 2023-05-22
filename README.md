@@ -37,6 +37,11 @@ the default temperature unit.
 
 <b>Important:</b> If you can not retrieve the weather data from the internet for some reason. Use same logic as User Preferences. Write some data you have generated to a text file to be read in the program and simulate the program. <b>However, do not forget, this will make your group lose points from Retrieve Weather Data task.</b>
 
-initial design: 
+Initial design: 
 
-<img width="844" alt="Screenshot" src="https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/359351f8-7f40-4d6b-988b-b46aad19b4cf">
+<img width="850" alt="Screenshot" src="https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/359351f8-7f40-4d6b-988b-b46aad19b4cf">
+
+Modified design: 
+
+<img width="850" alt="Screenshot" src="https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/9658f418-bed1-499c-bea8-f111f2928f67">
+
