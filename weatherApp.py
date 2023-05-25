@@ -17,23 +17,49 @@ def getImage(path, x, y):
     label.image = Icon
     label.place(x = x, y = y)
 
-#get date and time
-def getDateTime():
-    currentDateTime = datetime.now().strftime("As of " + "%I:%M %p - %Y|%m|%d")
-    return currentDateTime
-
 country    = 'turkey'
 city       = 'izmir'
 weatherURL = f"https://www.timeanddate.com/weather/{country}/{city}"
-windURL    = f'https://www.timeanddate.com/weather/{country}/{city}/ext'
+windURL    = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
 
-#create function that gets weather info from timeanddate.com
+# functions that gets weather info from timeanddate.com, date and time.
 def getWeatherData(e_type, e_class, xPath, URL):
     webPage = requests.get(URL)
     if xPath == None:
         return BeautifulSoup(webPage.content, "html.parser").find(e_type, class_= e_class).text
     else: 
-        return html.fromstring(webPage.content).xpath(xPath)[0]    
+        return html.fromstring(webPage.content).xpath(xPath)[0]   
+
+def getTime():
+     sunrise = getWeatherData(None, None, '//*[@id="wt-ext"]/tbody/tr[1]/td[11]/text()', windURL)
+     sunset = getWeatherData(None, None, '//*[@id="wt-ext"]/tbody/tr[1]/td[12]/text()', windURL)
+     currentTime = datetime.now().strftime("%H:%M")
+     if currentTime >= sunset or currentTime <= sunrise:
+        return "night"
+     else:
+        return "morning" 
+     
+def getWeatherIcon(weatherStatus):
+     if   ((weatherStatus == "Scattered clouds") or (weatherStatus == "Passing clouds") or (weatherStatus == "Broken clouds") or (weatherStatus == "Partly sunny") or (weatherStatus == "Partly sunny")) and (getTime() == "morning"):
+          path = "icons/weather-icons/partly-cloudy.png"  
+     elif ((weatherStatus == "Scattered clouds") or (weatherStatus == "Passing clouds") or (weatherStatus == "Broken clouds") or (weatherStatus == "Partly cloudy")) and (getTime() == "night"):
+          path = "icons/weather-icons/partly-cloudy(night).png" 
+     elif ((weatherStatus == "Sunny") or (weatherStatus == "Clear") or (weatherStatus == "Mostly Clear")) and (getTime() == "morning"):
+          path = "icons/weather-icons/clear.png" 
+     elif ((weatherStatus == "Mostly Clear") or (weatherStatus == "Clear")) and (getTime() == "night"):
+          path = "icons/weather-icons/clear(night).png" 
+     elif ((weatherStatus == "Thunderstorms") or (weatherStatus == "Light rain") or (weatherStatus == "Scattered showers") or (weatherStatus == "Rain") or (weatherStatus == "Passing showers")) and (getTime() == "morning"):
+          path = "icons/weather-icons/rain.png" 
+     elif ((weatherStatus == "Thunderstorms") or (weatherStatus == "Light rain") or (weatherStatus == "Scattered showers") or (weatherStatus == "Rain") or (weatherStatus == "Passing showers")) and (getTime() == "night"):
+          path = "icons/weather-icons/rain(night).png" 
+     elif ((weatherStatus == "Snow flurries") or (weatherStatus == "Extremely cold") or (weatherStatus == "Snow")):
+          path = "icons/weather-icons/snow.png" 
+     else: path = "icons/weather-icons/error.png" 
+     return path
+        
+def getDateTime():
+    currentDateTime = datetime.now().strftime("As of " + "%I:%M %p - %Y|%m|%d")
+    return currentDateTime
 
 #create function that keeps data updated
 def updateData():
@@ -91,8 +117,10 @@ dewPointStatus   = Label(program, font = ("Helvetica", 18, "normal"), fg = '#FFF
 celsius    = Button(program, text = "C°", font = ("Helvetica", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); celsius.place(x = 635, y = 30);
 Fahrenheit = Button(program, text = "F°", font = ("Helvetica", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); Fahrenheit.place(x = 680, y = 30);
 
+updateData()
+
 #icons
-weatherStatusIcon  = getImage("icons/weather-icons/clear.png", 655, 90)
+weatherStatusIcon  = getImage(getWeatherIcon(weatherStatus['text']), 655, 90)
 visibilityIcon     = getImage("icons/shared-vision.png", 75, 240)
 pressureIcon       = getImage("icons/resilience.png", 75, 308)
 windIcon           = getImage("icons/wind.png", 75, 375)
@@ -107,5 +135,4 @@ horizontalLine4 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horiz
 
 #implementation -------------------------------------------------------------------------------------------------------------------------------------
 
-updateData()
 program.mainloop()
