@@ -3,11 +3,13 @@ import sys
 import time
 import requests
 import tkinter as tk
+from tkinter import Tk, ttk
 from tkinter import *
 from lxml import html
 from datetime import datetime
 from bs4 import BeautifulSoup
 from PIL import ImageTk, Image
+
 
 #functions ------------------------------------------------------------------------------------------------------------------------------------------
 #define png file
@@ -22,7 +24,7 @@ city       = 'izmir'
 weatherURL = f"https://www.timeanddate.com/weather/{country}/{city}"
 windURL    = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
 
-# functions that gets weather info from timeanddate.com, date and time.
+#functions that gets weather info from timeanddate.com, date and time.
 def getWeatherData(e_type, e_class, xPath, URL):
     webPage = requests.get(URL)
     if xPath == None:
@@ -63,7 +65,7 @@ def getDateTime():
 
 #create function that keeps data updated
 def updateData():
-        location['text']      = getWeatherData("h1", "headline-banner__title", None, weatherURL)
+        #location['text']      = getWeatherData("h1", "headline-banner__title", None, weatherURL)
         dateTime['text']      = getDateTime()
         temperature['text']   = getWeatherData("div", "h2", None, weatherURL)
         weatherStatus['text'] = getWeatherData(None, None, '//*[@id="qlook"]/p[1]/text()', weatherURL)[:-1]
@@ -75,8 +77,17 @@ def updateData():
         humidityStatus['text']   = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[6]/td/text()', weatherURL)
         dewPointStatus['text']   = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[7]/td/text()', weatherURL)
 
-        location.after(60000, updateData)
+        dateTime.after(60000, updateData)
         program.update()
+
+#droplist action
+def click(event):
+     c_location = dropList.get().strip().split()
+     global country, city
+     country     = c_location[0][:-1].lower()
+     city        = c_location[1].lower()
+     print(country)
+     print(city)
 
 '''
 #change themes
@@ -94,9 +105,18 @@ program.config(bg = "#D49F4A")                                  # Set the backgr
 screen_bg = program.tk.call("tk", "windowingsystem")            # Get the background color of the screen
 '''
 
+#dropdown menu
+
+options = [ "Izmir, Turkey", "Istanbul, Turkey", "Ankara, Turkey", "Baghdad, Iraq", "Mosul, Iraq"]
+dropList = ttk.Combobox(program, value = options, width = 15)
+dropList.current(0)
+dropList.bind("<<ComboboxSelected>>", click)
+dropList.configure(font = ("Helvetica", 22), background = "red")
+dropList.place(x = 350, y = 30)
+
 #labels
-location      = Label(program, font = ("Helvetica", 30, "bold"), fg = '#FFFFFF'); location.place(x = 75, y = 30);
-dateTime      = Label(program, font = ("Helvetica", 15, "bold"), fg = '#FFFFFF'); dateTime.place(x = 75, y = 70);
+location      = Label(program, font = ("Helvetica", 25, "normal"), fg = '#FFFFFF', text = "The cureent weather in :"); location.place(x = 75, y = 30);
+dateTime      = Label(program, font = ("Helvetica", 18, "normal"), fg = '#FFFFFF'); dateTime.place(x = 75, y = 60);
 temperature   = Label(program, font = ("Helvetica", 120, "bold"), fg = '#FFFFFF'); temperature.place(x = 75, y = 100);
 weatherStatus = Label(program, font = ("Helvetica", 20, "bold"), fg = '#FFFFFF',  width = 15, anchor = "e", justify = LEFT); weatherStatus.place(x = 535, y = 160);
 HLTemperature = Label(program, font = ("Helvetica", 20, "bold"), fg = '#FFFFFF'); HLTemperature.place(x = 625, y = 190);
@@ -134,5 +154,6 @@ horizontalLine3 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horiz
 horizontalLine4 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine4.place(x = 420, y = 370);
 
 #implementation -------------------------------------------------------------------------------------------------------------------------------------
-
+print(country)
+print(city)
 program.mainloop()
