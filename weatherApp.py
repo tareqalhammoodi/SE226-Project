@@ -10,6 +10,8 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from PIL import ImageTk, Image
 
+weatherURL = f"https://www.timeanddate.com/weather/turkey/izmir"
+windURL    = f"https://www.timeanddate.com/weather/turkey/izmir/ext"
 
 #functions ------------------------------------------------------------------------------------------------------------------------------------------
 #define png file
@@ -18,11 +20,6 @@ def getImage(path, x, y):
     label = Label(program, image = Icon)
     label.image = Icon
     label.place(x = x, y = y)
-
-country    = 'turkey'
-city       = 'izmir'
-weatherURL = f"https://www.timeanddate.com/weather/{country}/{city}"
-windURL    = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
 
 #functions that gets weather info from timeanddate.com, date and time.
 def getWeatherData(e_type, e_class, xPath, URL):
@@ -77,21 +74,31 @@ def updateData():
         humidityStatus['text']   = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[6]/td/text()', weatherURL)
         dewPointStatus['text']   = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[7]/td/text()', weatherURL)
 
-        dateTime.after(60000, updateData)
-        program.update()
-
 #droplist action
 def click(event):
+     global weatherURL, windURL
      c_location = dropList.get().strip().split()
-     global country, city
-     country     = c_location[0][:-1].lower()
-     city        = c_location[1].lower()
-     print(country)
-     print(city)
+     city       = c_location[0][:-1].lower()
+     country    = c_location[1].lower()
+     weatherURL = f"https://www.timeanddate.com/weather/{country}/{city}"
+     windURL    = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
+     updateData()
+     program.update()     
+
+#refresh data every minute
+def refresh():
+     updateData()
+     program.after(60000, updateData)
+     program.update()
+
 
 '''
 #change themes
 def changeTheme(element,color):
+'''
+'''
+program.config(bg = "#D49F4A")                                  # Set the background color of the window
+screen_bg = program.tk.call("tk", "windowingsystem")            # Get the background color of the screen
 '''
 
 #create the GUI -------------------------------------------------------------------------------------------------------------------------------------
@@ -100,18 +107,20 @@ program.geometry("800x450")
 program.title("Weather Information Display Program")
 program.resizable(False, False)
 
-'''
-program.config(bg = "#D49F4A")                                  # Set the background color of the window
-screen_bg = program.tk.call("tk", "windowingsystem")            # Get the background color of the screen
-'''
-
 #dropdown menu
+options = []
+with open("world.txt", 'r') as file:
+     for line in file:
+          line = line.strip().split()
+          city = line[0][:-1]
+          country = line[1]
+          location = f"{city}, {country}"
+          options.append(location)
 
-options = [ "Izmir, Turkey", "Istanbul, Turkey", "Ankara, Turkey", "Baghdad, Iraq", "Mosul, Iraq"]
 dropList = ttk.Combobox(program, value = options, width = 15)
 dropList.current(0)
 dropList.bind("<<ComboboxSelected>>", click)
-dropList.configure(font = ("Helvetica", 22), background = "red")
+dropList.configure(font = ("Helvetica", 22))
 dropList.place(x = 350, y = 30)
 
 #labels
@@ -135,9 +144,9 @@ dewPointStatus   = Label(program, font = ("Helvetica", 18, "normal"), fg = '#FFF
 
 #buttons
 celsius    = Button(program, text = "C°", font = ("Helvetica", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); celsius.place(x = 635, y = 30);
-Fahrenheit = Button(program, text = "F°", font = ("Helvetica", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); Fahrenheit.place(x = 680, y = 30);
+fahrenheit = Button(program, text = "F°", font = ("Helvetica", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); fahrenheit.place(x = 680, y = 30);
 
-updateData()
+refresh()
 
 #icons
 weatherStatusIcon  = getImage(getWeatherIcon(weatherStatus['text']), 655, 90)
@@ -154,6 +163,4 @@ horizontalLine3 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horiz
 horizontalLine4 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine4.place(x = 420, y = 370);
 
 #implementation -------------------------------------------------------------------------------------------------------------------------------------
-print(country)
-print(city)
 program.mainloop()
