@@ -22,3 +22,7 @@ Barcelona, Spain
 Madrid, Spain
 Madrid, Spain
 Madrid, Spain
+Chicago, USA
+Miami, USA
+New-York, USA
+Detroit, USA

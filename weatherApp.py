@@ -10,8 +10,21 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from PIL import ImageTk, Image
 
-weatherURL = f"https://www.timeanddate.com/weather/turkey/izmir"
-windURL    = f"https://www.timeanddate.com/weather/turkey/izmir/ext"
+selected_id = ""
+selected_unit = ""
+selected_city = ""
+selected_country = ""
+selected_location = ""
+
+with open("Settings.txt", 'r') as file:
+     for line in file:
+          line = line.strip().split() 
+          city = line[0][:-1].lower(); country = line[1].lower(); id = int(line[2]); unit = line[3];
+          selected_unit = unit; selected_city = city; selected_country = country; selected_id = id;
+     file.close()
+
+weatherURL = f"https://www.timeanddate.com/weather/{selected_country}/{selected_city}"
+windURL    = f"https://www.timeanddate.com/weather/{selected_country}/{selected_city}/ext"
 
 #functions ------------------------------------------------------------------------------------------------------------------------------------------
 #define png file
@@ -21,7 +34,7 @@ def getImage(path, x, y):
     label.image = Icon
     label.place(x = x, y = y)
 
-#functions that gets weather info from timeanddate.com, date and time.
+#functions that gets weather, date and time info from timeanddate.com
 def getWeatherData(e_type, e_class, xPath, URL):
     webPage = requests.get(URL)
     if xPath == None:
@@ -60,7 +73,18 @@ def getDateTime():
     currentDateTime = datetime.now().strftime("As of " + "%I:%M %p - %Y|%m|%d")
     return currentDateTime
 
-#create function that keeps data updated
+#function that save settings
+def saveSettings(ID):
+     with open("Settings.txt", 'w+') as file:
+          #file.truncate(0)
+          c_location = dropList.get().strip().split()
+          city       = c_location[0][:-1].lower()
+          country    = c_location[1].lower()
+          data = (city + ", " + country + " " + ID + " " + selected_unit)
+          file.writelines(data)
+          file.close()
+
+#function that keeps data updated
 def updateData():
         #location['text']      = getWeatherData("h1", "headline-banner__title", None, weatherURL)
         dateTime['text']      = getDateTime()
@@ -84,13 +108,14 @@ def click(event):
      windURL    = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
      updateData()
      program.update()     
+     saveSettings(format(dropList.current()))
+     
 
 #refresh data every minute
 def refresh():
      updateData()
      program.after(60000, updateData)
      program.update()
-
 
 '''
 #change themes
@@ -116,9 +141,9 @@ with open("world.txt", 'r') as file:
           country = line[1]
           location = f"{city}, {country}"
           options.append(location)
-
+     file.close()
 dropList = ttk.Combobox(program, value = options, width = 15)
-dropList.current(0)
+dropList.set(options[selected_id])
 dropList.bind("<<ComboboxSelected>>", click)
 dropList.configure(font = ("Helvetica", 22))
 dropList.place(x = 350, y = 30)
