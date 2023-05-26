@@ -10,12 +10,14 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from PIL import ImageTk, Image
 
+#define variables
 selected_id = ""
 selected_unit = ""
 selected_city = ""
 selected_country = ""
 selected_location = ""
 
+#get user preferences from settings.txt file
 with open("Settings.txt", 'r') as file:
      for line in file:
           line = line.strip().split() 
@@ -73,7 +75,10 @@ def getDateTime():
     currentDateTime = datetime.now().strftime("As of " + "%I:%M %p - %Y|%m|%d")
     return currentDateTime
 
-#function that save settings
+def changeUnit():
+     print()
+
+#function that save user preferences to settings.txt file
 def saveSettings(ID):
      with open("Settings.txt", 'w+') as file:
           #file.truncate(0)
@@ -98,7 +103,7 @@ def updateData():
         humidityStatus['text']   = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[6]/td/text()', weatherURL)
         dewPointStatus['text']   = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[7]/td/text()', weatherURL)
 
-#droplist action
+#droplist actions
 def click(event):
      global weatherURL, windURL
      c_location = dropList.get().strip().split()
@@ -109,7 +114,61 @@ def click(event):
      updateData()
      program.update()     
      saveSettings(format(dropList.current()))
-     
+
+#settings window
+def settingsWindow():
+     program.withdraw()                                                                                                 #make main window invisible
+     window = Toplevel(program)
+     window.title("Weather Information Display Program Settings")
+     window.geometry("800x450")
+
+     def l_click(event):
+          global weatherURL, windURL
+          c_location = locationDropList.get().strip().split()
+          city       = c_location[0][:-1].lower()
+          country    = c_location[1].lower()
+          weatherURL = f"https://www.timeanddate.com/weather/{country}/{city}"
+          windURL    = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
+
+     def u_click(event):
+          global selected_unit
+          selected_unit = unitDropList.get()
+
+     def save():
+          updateData()
+          program.update()     
+          saveSettings(format(locationDropList.current()))
+          program.deiconify()                                                                                           #make main window visible
+          window.destroy()
+
+     Title = Label(window, font = ("Avenir", 25, "normal"), fg = '#FFFFFF', text = "Weather Information Display Program"); Title.place(x = 200, y = 55);
+     locationTitle = Label(window, font = ("Avenir", 20, "normal"), fg = '#FFFFFF', text = "Select location:"); locationTitle.place(x = 200, y = 140);
+     #location dropdown menu
+     options = []
+     with open("world.txt", 'r') as file:
+          for line in file:
+               line = line.strip().split()
+               city = line[0][:-1]
+               country = line[1]
+               location = f"{city}, {country}"
+               options.append(location)
+          file.close()
+     locationDropList = ttk.Combobox(window, value = options, width = 33)
+     locationDropList.set("Ex: Izmir, Türkiye")
+     locationDropList.bind("<<ComboboxSelected>>", l_click)
+     locationDropList.configure(font = ("Avenir", 20))
+     locationDropList.place(x = 200, y = 170)
+
+     unitTitle = Label(window, font = ("Avenir", 20, "normal"), fg = '#FFFFFF', text = "Temperature Unite:"); unitTitle.place(x = 200, y = 220);
+     #unit dropdown menu
+     units = ["celsius", "fahrenheit"]
+     unitDropList = ttk.Combobox(window, value = units, width = 33)
+     unitDropList.set("Ex: Celsius")
+     unitDropList.bind("<<ComboboxSelected>>", u_click)
+     unitDropList.configure(font = ("Avenir", 20))
+     unitDropList.place(x = 200, y = 250)
+
+     saveButton = Button(window, text = "Save", font = ("Avenir", 16, "normal"), fg = "#000000", borderwidth = 0, width = 4, height = 1, command = save); saveButton.place(x = 375, y = 350);
 
 #refresh data every minute
 def refresh():
@@ -131,7 +190,7 @@ program = Tk()
 program.geometry("800x450")
 program.title("Weather Information Display Program")
 program.resizable(False, False)
-
+settingsWindow()                                                                                                   
 #dropdown menu
 options = []
 with open("world.txt", 'r') as file:
@@ -145,31 +204,31 @@ with open("world.txt", 'r') as file:
 dropList = ttk.Combobox(program, value = options, width = 15)
 dropList.set(options[selected_id])
 dropList.bind("<<ComboboxSelected>>", click)
-dropList.configure(font = ("Helvetica", 22))
+dropList.configure(font = ("Avenir", 20))
 dropList.place(x = 350, y = 30)
 
 #labels
-location      = Label(program, font = ("Helvetica", 25, "normal"), fg = '#FFFFFF', text = "The cureent weather in :"); location.place(x = 75, y = 30);
-dateTime      = Label(program, font = ("Helvetica", 18, "normal"), fg = '#FFFFFF'); dateTime.place(x = 75, y = 60);
-temperature   = Label(program, font = ("Helvetica", 120, "bold"), fg = '#FFFFFF'); temperature.place(x = 75, y = 100);
-weatherStatus = Label(program, font = ("Helvetica", 20, "bold"), fg = '#FFFFFF',  width = 15, anchor = "e", justify = LEFT); weatherStatus.place(x = 535, y = 160);
-HLTemperature = Label(program, font = ("Helvetica", 20, "bold"), fg = '#FFFFFF'); HLTemperature.place(x = 625, y = 190);
+location      = Label(program, font = ("Avenir", 25, "normal"), fg = '#FFFFFF', text = "The cureent weather in :"); location.place(x = 75, y = 30);
+dateTime      = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); dateTime.place(x = 75, y = 60);
+temperature   = Label(program, font = ("Avenir", 120, "bold"), fg = '#FFFFFF'); temperature.place(x = 75, y = 100);
+weatherStatus = Label(program, font = ("Avenir", 20, "bold"), fg = '#FFFFFF',  width = 15, anchor = "e", justify = LEFT); weatherStatus.place(x = 535, y = 160);
+HLTemperature = Label(program, font = ("Avenir", 20, "bold"), fg = '#FFFFFF'); HLTemperature.place(x = 625, y = 190);
 
-visibilityTitle = Label(program, text = "Visibility",  font = ("Helvetica", 18, "normal"), fg = '#FFFFFF'); visibilityTitle.place(x = 140, y = 255);
-pressureTitle   = Label(program, text = "Pressure",    font = ("Helvetica", 18, "normal"), fg = '#FFFFFF'); pressureTitle.place(x = 140, y = 324);
-windTitle       = Label(program, text = "Wind Speed:", font = ("Helvetica", 18, "normal"), fg = '#FFFFFF'); windTitle.place(x = 140, y = 390);
-humidityTitle   = Label(program, text = "Humidity",    font = ("Helvetica", 18, "normal"), fg = '#FFFFFF'); humidityTitle.place(x = 485, y = 255);
-dewPointTitle   = Label(program, text = "Dew Point",   font = ("Helvetica", 18, "normal"), fg = '#FFFFFF'); dewPointTitle.place(x = 485, y = 324);
+visibilityTitle = Label(program, text = "Visibility",  font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); visibilityTitle.place(x = 140, y = 255);
+pressureTitle   = Label(program, text = "Pressure",    font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); pressureTitle.place(x = 140, y = 324);
+windTitle       = Label(program, text = "Wind Speed:", font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); windTitle.place(x = 140, y = 390);
+humidityTitle   = Label(program, text = "Humidity",    font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); humidityTitle.place(x = 485, y = 255);
+dewPointTitle   = Label(program, text = "Dew Point",   font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); dewPointTitle.place(x = 485, y = 324);
 
-visibilityStatus = Label(program, font = ("Helvetica", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); visibilityStatus.place(x = 280, y = 255);
-pressureStatus   = Label(program, font = ("Helvetica", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); pressureStatus.place(x = 280, y = 324);
-windStatus       = Label(program, font = ("Helvetica", 18, "normal"), fg = '#FFFFFF');                                          windStatus.place(x = 255, y = 390);
-humidityStatus   = Label(program, font = ("Helvetica", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); humidityStatus.place(x = 625, y = 255);
-dewPointStatus   = Label(program, font = ("Helvetica", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); dewPointStatus.place(x = 625, y = 324);
+visibilityStatus = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); visibilityStatus.place(x = 280, y = 255);
+pressureStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); pressureStatus.place(x = 280, y = 324);
+windStatus       = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF');                                          windStatus.place(x = 255, y = 390);
+humidityStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); humidityStatus.place(x = 625, y = 255);
+dewPointStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); dewPointStatus.place(x = 625, y = 324);
 
 #buttons
-celsius    = Button(program, text = "C°", font = ("Helvetica", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); celsius.place(x = 635, y = 30);
-fahrenheit = Button(program, text = "F°", font = ("Helvetica", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); fahrenheit.place(x = 680, y = 30);
+celsius    = Button(program, text = "C°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); celsius.place(x = 635, y = 30);
+fahrenheit = Button(program, text = "F°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); fahrenheit.place(x = 680, y = 30);
 
 refresh()
 
@@ -187,5 +246,4 @@ horizontalLine2 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horiz
 horizontalLine3 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine3.place(x = 420, y = 300);
 horizontalLine4 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine4.place(x = 420, y = 370);
 
-#implementation -------------------------------------------------------------------------------------------------------------------------------------
 program.mainloop()

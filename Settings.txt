@@ -1,1 +1,1 @@
-frankfurt, germany 11 celsius
+frankfurt, germany 12 fahrenheit
