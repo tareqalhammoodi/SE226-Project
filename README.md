@@ -59,3 +59,5 @@ Team Members:
 Course Assistan(s):
 
 &ensp;&ensp;&ensp;[Res. Asst. Erdem Okur](https://people.ieu.edu.tr/en/erdemokur/main)
+
+SE-226 Course Coordinator and Lecturer, [Assoc. Prof. Senem KUMOVA METİN](https://people.ieu.edu.tr/en/senemkumovametin/main)
