@@ -21,8 +21,8 @@ selected_location = ""
 with open("Settings.txt", 'r') as file:
      for line in file:
           line = line.strip().split() 
-          city = line[0][:-1].lower(); country = line[1].lower(); id = int(line[2]); unit = line[3];
-          selected_unit = unit; selected_city = city; selected_country = country; selected_id = id;
+          city = line[0][:-1].lower(); country = line[1].lower(); stored_id = int(line[2]); unit = line[3];
+          selected_unit = unit; selected_city = city; selected_country = country; selected_id = stored_id;
      file.close()
 
 weatherURL = f"https://www.timeanddate.com/weather/{selected_country}/{selected_city}"
@@ -75,14 +75,11 @@ def getDateTime():
     currentDateTime = datetime.now().strftime("As of " + "%I:%M %p - %Y|%m|%d")
     return currentDateTime
 
-def changeUnit():
-     print()
-
 #function that save user preferences to settings.txt file
-def saveSettings(ID):
+def saveSettings(ID, list):
      with open("Settings.txt", 'w+') as file:
           #file.truncate(0)
-          c_location = dropList.get().strip().split()
+          c_location = list.get().strip().split()
           city       = c_location[0][:-1].lower()
           country    = c_location[1].lower()
           data = (city + ", " + country + " " + ID + " " + selected_unit)
@@ -91,20 +88,39 @@ def saveSettings(ID):
 
 #function that keeps data updated
 def updateData():
-        #location['text']      = getWeatherData("h1", "headline-banner__title", None, weatherURL)
-        dateTime['text']      = getDateTime()
-        temperature['text']   = getWeatherData("div", "h2", None, weatherURL)
+        dateTime['text'] = getDateTime()
+
+        c_temp = int(getWeatherData("div", "h2", None, weatherURL)[:-3])
+        f_temp = ((c_temp * 9/5) + 32)
+        if selected_unit == "fahrenheit":
+               temperature['text'] = str(f_temp) + " F°"
+        else:
+               temperature['text'] = str(c_temp) + " C°"
+               
         weatherStatus['text'] = getWeatherData(None, None, '//*[@id="qlook"]/p[1]/text()', weatherURL)[:-1]
-        HLTemperature['text'] = getWeatherData(None, None, '//*[@id="qlook"]/p[2]/span[1]/text()', weatherURL)[10:]
+
+        c_Htemp = int(getWeatherData(None, None, '//*[@id="qlook"]/p[2]/span[1]/text()', weatherURL)[10:-7])
+        c_Ltemp = int(getWeatherData(None, None, '//*[@id="qlook"]/p[2]/span[1]/text()', weatherURL)[15:-3])
+        f_Htemp = ((c_Htemp * 9/5) + 32); f_Ltemp = ((c_Ltemp * 9/5) + 32);
+        if selected_unit == "fahrenheit":
+               HLTemperature['text'] = str(f_Htemp) + " / " + str(f_Ltemp) + " F°"
+        else:
+               HLTemperature['text'] = str(c_Htemp) + " / " + str(c_Ltemp) + " C°"
 
         visibilityStatus['text'] = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[4]/td/text()', weatherURL)
-        pressureStatus['text']   = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[5]/td/text()', weatherURL)
-        windStatus['text']       = 'Expect winds today around ' + getWeatherData(None, None, '//*[@id="wt-ext"]/tbody/tr[1]/td[5]/text()', windURL) + ', tomorrow ' + getWeatherData(None, None, '//*[@id="wt-ext"]/tbody/tr[2]/td[5]/text()', windURL) + '.'
-        humidityStatus['text']   = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[6]/td/text()', weatherURL)
-        dewPointStatus['text']   = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[7]/td/text()', weatherURL)
+        pressureStatus['text'] = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[5]/td/text()', weatherURL)
+        windStatus['text'] = 'Expect winds today around ' + getWeatherData(None, None, '//*[@id="wt-ext"]/tbody/tr[1]/td[5]/text()', windURL) + ', tomorrow ' + getWeatherData(None, None, '//*[@id="wt-ext"]/tbody/tr[2]/td[5]/text()', windURL) + '.'
+        humidityStatus['text'] = getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[6]/td/text()', weatherURL)
+        
+        c_dp = int(getWeatherData(None, None, '/html/body/div[5]/main/article/section[1]/div[2]/table/tbody/tr[7]/td/text()', weatherURL)[:-3])
+        f_dp = ((c_dp * 9/5) + 32)
+        if selected_unit == "fahrenheit":
+               dewPointStatus['text'] = str(f_dp) + " F°"
+        else:
+               dewPointStatus['text'] = str(c_dp) + " C°"
 
 #droplist actions
-def click(event):
+def action(event):
      global weatherURL, windURL
      c_location = dropList.get().strip().split()
      city       = c_location[0][:-1].lower()
@@ -113,7 +129,7 @@ def click(event):
      windURL    = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
      updateData()
      program.update()     
-     saveSettings(format(dropList.current()))
+     saveSettings(format(dropList.current()), dropList)
 
 #settings window
 def settingsWindow():
@@ -122,22 +138,25 @@ def settingsWindow():
      window.title("Weather Information Display Program Settings")
      window.geometry("800x450")
 
-     def l_click(event):
-          global weatherURL, windURL
-          c_location = locationDropList.get().strip().split()
-          city       = c_location[0][:-1].lower()
-          country    = c_location[1].lower()
-          weatherURL = f"https://www.timeanddate.com/weather/{country}/{city}"
-          windURL    = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
+     def l_action(event):
+          global selected_city, selected_country, selected_id
+          c_location       = locationDropList.get().strip().split()
+          city             = c_location[0][:-1].lower()
+          country          = c_location[1].lower()
+          l_ID             = format(locationDropList.current())
+          selected_city    = city
+          selected_country = country
+          selected_id      = l_ID
 
-     def u_click(event):
+     def u_action(event):
           global selected_unit
           selected_unit = unitDropList.get()
 
      def save():
           updateData()
           program.update()     
-          saveSettings(format(locationDropList.current()))
+          saveSettings(format(locationDropList.current()), locationDropList)
+          
           program.deiconify()                                                                                           #make main window visible
           window.destroy()
 
@@ -155,7 +174,7 @@ def settingsWindow():
           file.close()
      locationDropList = ttk.Combobox(window, value = options, width = 33)
      locationDropList.set("Ex: Izmir, Türkiye")
-     locationDropList.bind("<<ComboboxSelected>>", l_click)
+     locationDropList.bind("<<ComboboxSelected>>", l_action)
      locationDropList.configure(font = ("Avenir", 20))
      locationDropList.place(x = 200, y = 170)
 
@@ -164,7 +183,7 @@ def settingsWindow():
      units = ["celsius", "fahrenheit"]
      unitDropList = ttk.Combobox(window, value = units, width = 33)
      unitDropList.set("Ex: Celsius")
-     unitDropList.bind("<<ComboboxSelected>>", u_click)
+     unitDropList.bind("<<ComboboxSelected>>", u_action)
      unitDropList.configure(font = ("Avenir", 20))
      unitDropList.place(x = 200, y = 250)
 
@@ -190,7 +209,17 @@ program = Tk()
 program.geometry("800x450")
 program.title("Weather Information Display Program")
 program.resizable(False, False)
-settingsWindow()                                                                                                   
+
+#run setting window only once
+with open('run.txt', 'r') as file :
+          code = file.read()
+          if code == "on":
+               settingsWindow()
+          code = code.replace('on', 'off')
+with open('run.txt', 'w') as file:
+          file.write(code)
+                                                                                                   
+
 #dropdown menu
 options = []
 with open("world.txt", 'r') as file:
@@ -203,16 +232,16 @@ with open("world.txt", 'r') as file:
      file.close()
 dropList = ttk.Combobox(program, value = options, width = 15)
 dropList.set(options[selected_id])
-dropList.bind("<<ComboboxSelected>>", click)
+dropList.bind("<<ComboboxSelected>>", action)
 dropList.configure(font = ("Avenir", 20))
 dropList.place(x = 350, y = 30)
 
 #labels
 location      = Label(program, font = ("Avenir", 25, "normal"), fg = '#FFFFFF', text = "The cureent weather in :"); location.place(x = 75, y = 30);
 dateTime      = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); dateTime.place(x = 75, y = 60);
-temperature   = Label(program, font = ("Avenir", 120, "bold"), fg = '#FFFFFF'); temperature.place(x = 75, y = 100);
+temperature   = Label(program, font = ("Avenir", 100, "bold"), fg = '#FFFFFF'); temperature.place(x = 75, y = 100);
 weatherStatus = Label(program, font = ("Avenir", 20, "bold"), fg = '#FFFFFF',  width = 15, anchor = "e", justify = LEFT); weatherStatus.place(x = 535, y = 160);
-HLTemperature = Label(program, font = ("Avenir", 20, "bold"), fg = '#FFFFFF'); HLTemperature.place(x = 625, y = 190);
+HLTemperature = Label(program, font = ("Avenir", 20, "bold"), fg = '#FFFFFF', width = 15, anchor = "e", justify = LEFT); HLTemperature.place(x = 535, y = 190);
 
 visibilityTitle = Label(program, text = "Visibility",  font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); visibilityTitle.place(x = 140, y = 255);
 pressureTitle   = Label(program, text = "Pressure",    font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); pressureTitle.place(x = 140, y = 324);
@@ -226,9 +255,41 @@ windStatus       = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF
 humidityStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); humidityStatus.place(x = 625, y = 255);
 dewPointStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); dewPointStatus.place(x = 625, y = 324);
 
+#functions that change units
+def changetoC():
+     global selected_unit
+     selected_unit = "celsius"
+     celsius['state'] = DISABLED
+     fahrenheit['state'] = NORMAL
+     with open('Settings.txt', 'r') as file :
+          new_data = file.read()
+          new_data = new_data.replace('fahrenheit', 'celsius')
+     with open('Settings.txt', 'w') as file:
+          file.write(new_data)
+     updateData()
+
+def changetoF():
+     global selected_unit
+     selected_unit = "fahrenheit"
+     celsius['state'] = NORMAL
+     fahrenheit['state'] = DISABLED
+     with open('Settings.txt', 'r') as file :
+          new_data = file.read()
+          new_data = new_data.replace('celsius', 'fahrenheit')
+     with open('Settings.txt', 'w') as file:
+          file.write(new_data)
+     updateData()
+     
 #buttons
-celsius    = Button(program, text = "C°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); celsius.place(x = 635, y = 30);
-fahrenheit = Button(program, text = "F°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1); fahrenheit.place(x = 680, y = 30);
+celsius    = Button(program, text = "C°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1, command = changetoC); celsius.place(x = 635, y = 30);
+fahrenheit = Button(program, text = "F°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1, command = changetoF); fahrenheit.place(x = 680, y = 30);
+
+if selected_unit == "fahrenheit":
+     fahrenheit['state'] = DISABLED
+     celsius['state'] = NORMAL
+else:
+     fahrenheit['state'] = NORMAL
+     celsius['state'] = DISABLED
 
 refresh()
 
