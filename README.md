@@ -52,6 +52,9 @@ the default temperature unit.
 ![ezgif com-gif-maker](https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/bc627341-a6f1-4ba4-a785-487d231c0401)
 ![ezgif com-gif-maker-2](https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/3ade74bd-daeb-47fa-ab46-c32874033e99)
 
+### Note: 
+The implementation of this application could have been done  in a better way by using a weather API. However, in order to adhere to the given instructions, we opted for an alternative approach that serves our project's requirements.  Nonetheless, it is important to note that this method is not the most efficient, as it tends to be slow and is depending on any changes that may occur on the website that we're getting the data from.
+
 
 ## Contributors
 Team Members:
