@@ -2,14 +2,15 @@
 import sys
 import time
 import requests
+import subprocess
 import tkinter as tk
 import urllib.request
-from tkinter import Tk, ttk, messagebox
 from tkinter import *
 from lxml import html
 from datetime import datetime
 from bs4 import BeautifulSoup
 from PIL import ImageTk, Image
+from tkinter import Tk, ttk, messagebox
 
 #define variables
 selected_id = ""; selected_unit = ""; selected_city = ""; selected_country = ""; selected_location = "";
@@ -26,7 +27,7 @@ weatherURL = f"https://www.timeanddate.com/weather/{selected_country}/{selected_
 extendedForecastURL = f"https://www.timeanddate.com/weather/{selected_country}/{selected_city}/ext"
 
 #functions ------------------------------------------------------------------------------------------------------------------------------------------
-#define png file
+#define png file and get the path
 def getImage(path, x, y):
     Icon = ImageTk.PhotoImage(Image.open(path))
     label = Label(program, image = Icon)
@@ -34,12 +35,21 @@ def getImage(path, x, y):
     label.place(x = x, y = y)
 
 #function that check internet connection
-def connect(host='http://google.com'):
+def connect(host = 'http://google.com'):
     try:
         urllib.request.urlopen(host)
         return True
     except:
         return False
+
+#check if macOS run on dark or light mode
+def check_appearance():
+   cmd = 'defaults read -g AppleInterfaceStyle'
+   p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
+   if bool(p.communicate()[0]):
+      return "dark"
+   else:
+      return "light"
 
 #functions that gets weather, date and time info from timeanddate.com
 def getWeatherData(e_type, e_class, xPath, URL):
@@ -65,7 +75,7 @@ def getTime():
         return "night"
      else:
         return "morning" 
-     
+
 def getWeatherIcon(weatherStatus):
      if   ((weatherStatus == "Scattered clouds") or (weatherStatus == "Passing clouds") or (weatherStatus == "Broken clouds") or (weatherStatus == "Partly sunny") or (weatherStatus == "Partly sunny")) and (getTime() == "morning"):
           path = "icons/weather-icons/partly-cloudy.png"  
@@ -150,7 +160,7 @@ def action(event):
      city       = c_location[0][:-1].lower()
      country    = c_location[1].lower()
      weatherURL = f"https://www.timeanddate.com/weather/{country}/{city}"
-     extendedForecastURL    = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
+     extendedForecastURL = f"https://www.timeanddate.com/weather/{country}/{city}/ext"
      updateData()
      program.update()     
      saveSettings(format(dropList.current()), dropList)
@@ -160,7 +170,11 @@ def settingsWindow():
      program.withdraw()                                                                                                 #make main window invisible
      window = Toplevel(program)
      window.title("Weather Information Display Program Settings")
-     window.geometry("800x450")
+     #to put window in the middle of the screen
+     app_width  = 800; screen_width  = window.winfo_screenwidth();  x = (screen_width / 2)  - (app_width / 2);
+     app_height = 450; screen_height = window.winfo_screenheight(); y = (screen_height / 2) - (app_height / 2);
+     window.geometry(f'{app_width}x{app_height}+{int(x)}+{int(y)}')
+     window.resizable(False, False)
 
      def l_action(event):
           global selected_city, selected_country, selected_id
@@ -216,20 +230,19 @@ def settingsWindow():
 
      saveButton = Button(window, text = "Save", font = ("Avenir", 16, "normal"), fg = "#000000", borderwidth = 0, width = 4, height = 1, command = save); saveButton.place(x = 375, y = 350);
 
+     #this function handel dark/light mode in macOS system
+     def darkLightTheme():
+          if check_appearance() == "light" and sys.platform == "darwin":
+               labels = [Title, locationTitle, unitTitle]
+               for i in range(len(labels)):
+                    labels[i]["fg"] = "#000000"
+     darkLightTheme()
+
 #refresh data every minute
 def refresh():
      updateData()
      program.after(60000, updateData)
      program.update()
-
-'''
-#change themes
-def changeTheme(element,color):
-'''
-'''
-program.config(bg = "#D49F4A")                                  # Set the background color of the window
-screen_bg = program.tk.call("tk", "windowingsystem")            # Get the background color of the screen
-'''
 
 #create the GUI -------------------------------------------------------------------------------------------------------------------------------------
 program = Tk()
@@ -270,7 +283,7 @@ else:
      dropList.set(options[selected_id])
      dropList.bind("<<ComboboxSelected>>", action)
      dropList.configure(font = ("Avenir", 20))
-     dropList.place(x = 350, y = 30)
+     dropList.place(x = 350, y = 35)
 
      #labels
      location      = Label(program, font = ("Avenir", 25, "normal"), fg = '#FFFFFF', text = "The cureent weather in :"); location.place(x = 75, y = 30);
@@ -316,7 +329,7 @@ else:
           with open('Settings.txt', 'w') as file:
                file.write(new_data)
           updateData()
-     
+
      #buttons
      celsius    = Button(program, text = "C°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1, command = changetoC); celsius.place(x = 635, y = 30);
      fahrenheit = Button(program, text = "F°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1, command = changetoF); fahrenheit.place(x = 680, y = 30);
@@ -344,4 +357,24 @@ else:
      horizontalLine3 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine3.place(x = 420, y = 300);
      horizontalLine4 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine4.place(x = 420, y = 370);
 
+     #this function handel dark/light mode in macOS system
+     def darkLightTheme():
+          if check_appearance() == "light" and sys.platform == "darwin":
+               labels = [location, dateTime, temperature, f_temperature, weatherStatus, HLTemperature, visibilityTitle, pressureTitle, windTitle,
+                         humidityTitle, dewPointTitle, visibilityStatus, pressureStatus, windStatus, humidityStatus, dewPointStatus]
+               for i in range(len(labels)):
+                    labels[i]["fg"] = "#000000"
+
+               lines = [horizontalLine1, horizontalLine2, horizontalLine3, horizontalLine4]
+               for i in range(len(lines)):
+                    lines[i]["bg"] = "#000000"
+               
+               global visibilityIcon, pressureIcon, windIcon, humidityIcon, dewPointIcon
+               visibilityIcon     = getImage("icons/shared-vision-dark.png", 75, 240)
+               pressureIcon       = getImage("icons/resilience-dark.png", 75, 308)
+               windIcon           = getImage("icons/wind-dark.png", 75, 375)
+               humidityIcon       = getImage("icons/humidity-dark.png", 420, 240)
+               dewPointIcon       = getImage("icons/drop-dark.png", 420, 308)
+    
+     darkLightTheme()
      program.mainloop()
