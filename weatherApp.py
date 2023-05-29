@@ -190,8 +190,19 @@ def settingsWindow():
           global selected_unit
           selected_unit = unitDropList.get()
 
-     Title = Label(window, font = ("Avenir", 25, "normal"), fg = '#FFFFFF', text = "Weather Information Display Program"); Title.place(x = 200, y = 55);
-     locationTitle = Label(window, font = ("Avenir", 20, "normal"), fg = '#FFFFFF', text = "Select location:"); locationTitle.place(x = 200, y = 140);
+     if sys.platform != "darwin":
+          Title = Label(window, font = ("Avenir", 18, "normal"), fg = '#000000', text = "Weather Information Display Program")
+          locationTitle = Label(window, font = ("Avenir", 16, "normal"), fg = '#000000', text = "Select location:")
+          unitTitle = Label(window, font = ("Avenir", 16, "normal"), fg = '#000000', text = "Temperature Unite:")
+     else:
+          Title = Label(window, font = ("Avenir", 25, "normal"), fg = '#FFFFFF', text = "Weather Information Display Program")
+          locationTitle = Label(window, font = ("Avenir", 20, "normal"), fg = '#FFFFFF', text = "Select location:")
+          unitTitle = Label(window, font = ("Avenir", 20, "normal"), fg = '#FFFFFF', text = "Temperature Unite:")
+     
+     Title.place(x = 200, y = 55)
+     locationTitle.place(x = 200, y = 140)
+     unitTitle.place(x = 200, y = 220)
+
      #location dropdown menu
      options = []
      with open("world.txt", 'r') as file:
@@ -205,16 +216,21 @@ def settingsWindow():
      locationDropList = ttk.Combobox(window, value = options, width = 33)
      locationDropList.set("Ex: Izmir, Türkiye")
      locationDropList.bind("<<ComboboxSelected>>", l_action)
-     locationDropList.configure(font = ("Avenir", 20))
+     if sys.platform != "darwin":
+          locationDropList.configure(font = ("Avenir", 16))
+     else:
+          locationDropList.configure(font = ("Avenir", 20))
      locationDropList.place(x = 200, y = 170)
 
-     unitTitle = Label(window, font = ("Avenir", 20, "normal"), fg = '#FFFFFF', text = "Temperature Unite:"); unitTitle.place(x = 200, y = 220);
      #unit dropdown menu
      units = ["celsius", "fahrenheit"]
      unitDropList = ttk.Combobox(window, value = units, width = 33)
      unitDropList.set("Ex: Celsius")
      unitDropList.bind("<<ComboboxSelected>>", u_action)
-     unitDropList.configure(font = ("Avenir", 20))
+     if sys.platform != "darwin":
+          unitDropList.configure(font = ("Avenir", 16))
+     else:
+          unitDropList.configure(font = ("Avenir", 20))
      unitDropList.place(x = 200, y = 250)
 
      def save():
@@ -282,28 +298,69 @@ else:
      dropList = ttk.Combobox(program, value = options, width = 15)
      dropList.set(options[selected_id])
      dropList.bind("<<ComboboxSelected>>", action)
-     dropList.configure(font = ("Avenir", 20))
-     dropList.place(x = 350, y = 35)
+     if (sys.platform != "darwin"):
+          dropList.configure(font = ("Avenir", 18))
+          dropList.place(x = 350, y = 20)
+     else:
+          dropList.configure(font = ("Avenir", 20))
+          dropList.place(x = 350, y = 25)
 
      #labels
-     location      = Label(program, font = ("Avenir", 25, "normal"), fg = '#FFFFFF', text = "The cureent weather in :"); location.place(x = 75, y = 30);
-     dateTime      = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); dateTime.place(x = 75, y = 60);
-     temperature   = Label(program, font = ("Avenir", 80, "bold"), fg = '#FFFFFF'); temperature.place(x = 75, y = 85);
-     f_temperature = Label(program, font = ("Avenir", 16, "normal"), fg = '#FFFFFF', anchor = "e", justify = LEFT); f_temperature.place(x = 75, y = 185);
-     weatherStatus = Label(program, font = ("Avenir", 20, "bold"), fg = '#FFFFFF',  width = 15, anchor = "e", justify = LEFT); weatherStatus.place(x = 535, y = 160);
-     HLTemperature = Label(program, font = ("Avenir", 20, "bold"), fg = '#FFFFFF', width = 15, anchor = "e", justify = LEFT); HLTemperature.place(x = 535, y = 190);
+     if (sys.platform != "darwin"):
+          location      = Label(program, font = ("Avenir", 18, "normal"), fg = '#000000', text = "The cureent weather in :")
+          dateTime      = Label(program, font = ("Avenir", 14, "normal"), fg = '#000000')
+          temperature   = Label(program, font = ("Avenir", 70, "bold"),   fg = '#000000')
+          f_temperature = Label(program, font = ("Avenir", 12, "normal"), fg = '#000000', anchor = "e", justify = LEFT)
+          weatherStatus = Label(program, font = ("Avenir", 16, "bold"),   fg = '#000000',  width = 15, anchor = "e", justify = LEFT)
+          HLTemperature = Label(program, font = ("Avenir", 16, "bold"),   fg = '#000000', width = 15, anchor = "e", justify = LEFT)
 
-     visibilityTitle = Label(program, text = "Visibility",  font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); visibilityTitle.place(x = 140, y = 255);
-     pressureTitle   = Label(program, text = "Pressure",    font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); pressureTitle.place(x = 140, y = 324);
-     windTitle       = Label(program, text = "Wind Speed:", font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); windTitle.place(x = 140, y = 390);
-     humidityTitle   = Label(program, text = "Humidity",    font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); humidityTitle.place(x = 485, y = 255);
-     dewPointTitle   = Label(program, text = "Dew Point",   font = ("Avenir", 18, "normal"), fg = '#FFFFFF'); dewPointTitle.place(x = 485, y = 324);
+          visibilityTitle = Label(program, text = "Visibility",  font = ("Avenir", 14, "normal"), fg = '#000000')
+          pressureTitle   = Label(program, text = "Pressure",    font = ("Avenir", 14, "normal"), fg = '#000000')
+          windTitle       = Label(program, text = "Wind Speed:", font = ("Avenir", 14, "normal"), fg = '#000000')
+          humidityTitle   = Label(program, text = "Humidity",    font = ("Avenir", 14, "normal"), fg = '#000000')
+          dewPointTitle   = Label(program, text = "Dew Point",   font = ("Avenir", 14, "normal"), fg = '#000000')
 
-     visibilityStatus = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); visibilityStatus.place(x = 280, y = 255);
-     pressureStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); pressureStatus.place(x = 280, y = 324);
-     windStatus       = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF');                                          windStatus.place(x = 255, y = 390);
-     humidityStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); humidityStatus.place(x = 625, y = 255);
-     dewPointStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT); dewPointStatus.place(x = 625, y = 324);
+          visibilityStatus = Label(program, font = ("Avenir", 14, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT)
+          pressureStatus   = Label(program, font = ("Avenir", 14, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT)
+          windStatus       = Label(program, font = ("Avenir", 14, "normal"), fg = '#FFFFFF');                                          
+          humidityStatus   = Label(program, font = ("Avenir", 14, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT)
+          dewPointStatus   = Label(program, font = ("Avenir", 14, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT)
+     else:
+          location      = Label(program, font = ("Avenir", 25, "normal"), fg = '#FFFFFF', text = "The cureent weather in :")
+          dateTime      = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF')
+          temperature   = Label(program, font = ("Avenir", 80, "bold"), fg = '#FFFFFF')
+          f_temperature = Label(program, font = ("Avenir", 16, "normal"), fg = '#FFFFFF', anchor = "e", justify = LEFT)
+          weatherStatus = Label(program, font = ("Avenir", 20, "bold"), fg = '#FFFFFF',  width = 15, anchor = "e", justify = LEFT)
+          HLTemperature = Label(program, font = ("Avenir", 20, "bold"), fg = '#FFFFFF', width = 15, anchor = "e", justify = LEFT)
+
+          visibilityTitle = Label(program, text = "Visibility",  font = ("Avenir", 18, "normal"), fg = '#FFFFFF')
+          pressureTitle   = Label(program, text = "Pressure",    font = ("Avenir", 18, "normal"), fg = '#FFFFFF')
+          windTitle       = Label(program, text = "Wind Speed:", font = ("Avenir", 18, "normal"), fg = '#FFFFFF')
+          humidityTitle   = Label(program, text = "Humidity",    font = ("Avenir", 18, "normal"), fg = '#FFFFFF')
+          dewPointTitle   = Label(program, text = "Dew Point",   font = ("Avenir", 18, "normal"), fg = '#FFFFFF')
+
+          visibilityStatus = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT)
+          pressureStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT)
+          windStatus       = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF')
+          humidityStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT)
+          dewPointStatus   = Label(program, font = ("Avenir", 18, "normal"), fg = '#FFFFFF', width = 8, anchor = "e", justify = LEFT)
+
+     location.place(x = 75, y = 20);
+     dateTime.place(x = 75, y = 50);
+     temperature.place(x = 75, y = 75);
+     f_temperature.place(x = 75, y = 185);
+     weatherStatus.place(x = 535, y = 160);
+     HLTemperature.place(x = 535, y = 190);
+     visibilityTitle.place(x = 140, y = 255);
+     pressureTitle.place(x = 140, y = 324);
+     windTitle.place(x = 140, y = 390);
+     humidityTitle.place(x = 485, y = 255);
+     dewPointTitle.place(x = 485, y = 324);
+     visibilityStatus.place(x = 280, y = 255);
+     pressureStatus.place(x = 280, y = 324);
+     windStatus.place(x = 255, y = 390);
+     humidityStatus.place(x = 625, y = 255);
+     dewPointStatus.place(x = 625, y = 324);
 
      #functions that change units
      def changetoC():
@@ -331,8 +388,12 @@ else:
           updateData()
 
      #buttons
-     celsius    = Button(program, text = "C°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1, command = changetoC); celsius.place(x = 635, y = 30);
-     fahrenheit = Button(program, text = "F°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1, command = changetoF); fahrenheit.place(x = 680, y = 30);
+     if (sys.platform != "darwin"):
+          celsius    = Button(program, text = "C°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 2, height = 1, command = changetoC); celsius.place(x = 655, y = 15);
+          fahrenheit = Button(program, text = "F°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 2, height = 1, command = changetoF); fahrenheit.place(x = 705, y = 15);
+     else:
+          celsius    = Button(program, text = "C°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1, command = changetoC); celsius.place(x = 635, y = 30);
+          fahrenheit = Button(program, text = "F°", font = ("Avenir", 18, "normal"), fg = "#000000", borderwidth = 0, width = 1, height = 1, command = changetoF); fahrenheit.place(x = 680, y = 30);
 
      if selected_unit == "fahrenheit":
           fahrenheit['state'] = DISABLED
@@ -357,15 +418,17 @@ else:
      horizontalLine3 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine3.place(x = 420, y = 300);
      horizontalLine4 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine4.place(x = 420, y = 370);
 
-     #this function handel dark/light mode in macOS system
+#this function handel light mode in macOS and windows system
      def darkLightTheme():
-          if check_appearance() == "light" and sys.platform == "darwin":
-               labels = [location, dateTime, temperature, f_temperature, weatherStatus, HLTemperature, visibilityTitle, pressureTitle, windTitle,
+          labels = [location, dateTime, temperature, f_temperature, weatherStatus, HLTemperature, visibilityTitle, pressureTitle, windTitle,
                          humidityTitle, dewPointTitle, visibilityStatus, pressureStatus, windStatus, humidityStatus, dewPointStatus]
+          
+          lines = [horizontalLine1, horizontalLine2, horizontalLine3, horizontalLine4]
+
+          if (check_appearance() == "light" and sys.platform == "darwin") or (sys.platform != "darwin"):
                for i in range(len(labels)):
                     labels[i]["fg"] = "#000000"
 
-               lines = [horizontalLine1, horizontalLine2, horizontalLine3, horizontalLine4]
                for i in range(len(lines)):
                     lines[i]["bg"] = "#000000"
                
