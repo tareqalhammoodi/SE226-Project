@@ -1,9 +1,7 @@
 #import necessary libraries
 import sys
-import time
 import requests
 import subprocess
-import tkinter as tk
 import urllib.request
 from tkinter import *
 from lxml import html

@@ -1,1 +1,1 @@
-izmir, turkey 0 celsius
+istanbul, turkey 1 celsius
