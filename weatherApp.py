@@ -1,4 +1,5 @@
 #import necessary libraries
+import os
 import sys
 import requests
 import subprocess
@@ -14,12 +15,15 @@ from tkinter import Tk, ttk, messagebox
 selected_id = ""; selected_unit = ""; selected_city = ""; selected_country = ""; selected_location = "";
 
 #get user preferences from settings.txt file
-with open("Settings.txt", 'r') as file:
-     for line in file:
-          line = line.strip().split() 
-          city = line[0][:-1].lower(); country = line[1].lower(); stored_id = int(line[2]); unit = line[3];
-          selected_unit = unit; selected_city = city; selected_country = country; selected_id = stored_id;
-     file.close()
+if os.path.isfile("Settings.txt"):
+     with open("Settings.txt", 'r') as file:
+          for line in file:
+               line = line.strip().split() 
+               city = line[0][:-1].lower(); country = line[1].lower(); stored_id = int(line[2]); unit = line[3];
+               selected_unit = unit; selected_city = city; selected_country = country; selected_id = stored_id;
+          file.close()
+else:
+     selected_unit = "celsius"; selected_city = "izmir"; selected_country = "turkey"; selected_id = 0;
 
 weatherURL = f"https://www.timeanddate.com/weather/{selected_country}/{selected_city}"
 extendedForecastURL = f"https://www.timeanddate.com/weather/{selected_country}/{selected_city}/ext"
@@ -285,14 +289,17 @@ else:
 
      #dropdown menu
      options = []
-     with open("world.txt", 'r') as file:
-          for line in file:
-               line = line.strip().split()
-               city = line[0][:-1]
-               country = line[1]
-               location = f"{city}, {country}"
-               options.append(location)
-          file.close()
+     if os.path.isfile("world.txt"):
+          with open("world.txt", 'r') as file:
+               for line in file:
+                    line = line.strip().split()
+                    city = line[0][:-1]
+                    country = line[1]
+                    location = f"{city}, {country}"
+                    options.append(location)
+               file.close()
+     else:
+          options = ["Izmir, Turkey", "Istanbul, Turkey", "Ankara, Turkey", "Antalya, Turkey", "Eskisehir, Turkey"]
      dropList = ttk.Combobox(program, value = options, width = 15)
      dropList.set(options[selected_id])
      dropList.bind("<<ComboboxSelected>>", action)
@@ -416,7 +423,7 @@ else:
      horizontalLine3 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine3.place(x = 420, y = 300);
      horizontalLine4 = Frame(program, bg = '#FFFFFF', height = 1, width = 300); horizontalLine4.place(x = 420, y = 370);
 
-#this function handel light mode in macOS and windows system
+     #this function handel light mode in macOS and windows system
      def darkLightTheme():
           labels = [location, dateTime, temperature, f_temperature, weatherStatus, HLTemperature, visibilityTitle, pressureTitle, windTitle,
                          humidityTitle, dewPointTitle, visibilityStatus, pressureStatus, windStatus, humidityStatus, dewPointStatus]
