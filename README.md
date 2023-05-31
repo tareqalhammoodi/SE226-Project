@@ -41,16 +41,16 @@ the default temperature unit.
 
 ### Initial design: 
 
-<img width="850" alt="Screenshot" src="https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/359351f8-7f40-4d6b-988b-b46aad19b4cf">
+<img width="850" alt="Screenshot" src="https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/9dc11fbf-0dc3-4c72-99db-e11c0aaaae80">
 
 ### Modified design: 
 
-<img width="850" alt="Screenshot" src="https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/9658f418-bed1-499c-bea8-f111f2928f67">
+<img width="850" alt="Screenshot" src="https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/0ce9c59f-8468-4b16-9973-a40da9d76cd6">
 
 ### Final:
 
-![ezgif com-gif-maker](https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/bc627341-a6f1-4ba4-a785-487d231c0401)
-![ezgif com-gif-maker-2](https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/3ade74bd-daeb-47fa-ab46-c32874033e99)
+![ezgif com-gif-maker](https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/47a95172-2b2d-4ede-ad2e-8b74c2f36611)
+![ezgif com-gif-maker-2](https://github.com/tareqalhammoodi/SE226-Project/assets/44919941/00e3396e-03d6-4564-8ed3-4b21e0629d4f)
 
 ### Note: 
 The implementation of this application could have been done  in a better way by using a weather API. However, in order to adhere to the given instructions, we opted for an alternative approach that serves our project's requirements.  Nonetheless, it is important to note that this method is not the most efficient, as it tends to be slow and is depending on any changes that may occur on the website that we're getting the data from.
